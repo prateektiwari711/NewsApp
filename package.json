@@ -2,7 +2,7 @@
   "name": "newsapp",
   "version": "0.1.0",
   "private": "false",
-  "homepage": "https://prateektiwari711.github.io/NewsApp/",
+  "homepage": "https://prateektiwari711.github.io/NewsApp",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
