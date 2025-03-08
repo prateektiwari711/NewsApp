@@ -9,61 +9,107 @@ export default class NewsComponents extends Component {
     this.state = {
       articles: [],
       loading: false,
-      page:1,
-      totalResults:0,
+      page: 1,
+      totalResults: 0,
     };
   }
 
   async componentDidMount() {
-    this.setState({ page:this.state.page+1})
-    let data = await fetch(
-      `https://newsapi.org/v2/top-headlines?country=in&category=${this.props.category}&apiKey=467063ee50f34587951aaa351218e393&page=${this.state.page}&pageSize=${this.props.pageSize}`
-    );
-    this.setState({loading:true,})
-    let parsedData = await data.json();
-    this.setState({
-      articles: parsedData.articles,
-      loading:false,
-      totalResults:parsedData.totalResults,
-    });
+    this.fetchNews();
   }
-  fetchMoreData = async() => {
-    this.setState({ page:this.state.page+1})
-    let data = await fetch(
-      `https://newsapi.org/v2/top-headlines?country=in&category=${this.props.category}&apiKey=467063ee50f34587951aaa351218e393&page=${this.state.page}&pageSize=${this.props.pageSize}`
-    );
-    this.setState({loading:true,})
-    let parsedData = await data.json();
-    setTimeout(() => {
+
+  fetchNews = async () => {
+    try {
+      this.setState({ loading: true });
+
+      let response = await fetch(
+        `https://newsapi.org/v2/top-headlines?country=in&category=${this.props.category}&apiKey=YOUR_API_KEY&page=${this.state.page}&pageSize=${this.props.pageSize}`,
+        {
+          headers: {
+            "User-Agent": "Mozilla/5.0",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+
+      let parsedData = await response.json();
       this.setState({
-        articles: this.state.articles.concat(parsedData.articles),
-        loading:false,
-        totalResults:parsedData.totalResults,
+        articles: parsedData.articles || [],
+        totalResults: parsedData.totalResults || 0,
+        loading: false,
       });
-    }, 1500);
+    } catch (error) {
+      console.error("Fetching news failed:", error);
+      this.setState({ loading: false });
+    }
+  };
+
+  fetchMoreData = async () => {
+    if (this.state.articles.length >= this.state.totalResults) return;
+
+    try {
+      let nextPage = this.state.page + 1;
+      let response = await fetch(
+        `https://newsapi.org/v2/top-headlines?country=in&category=${this.props.category}&apiKey=YOUR_API_KEY&page=${nextPage}&pageSize=${this.props.pageSize}`,
+        {
+          headers: {
+            "User-Agent": "Mozilla/5.0",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+
+      let parsedData = await response.json();
+      this.setState({
+        articles: [...this.state.articles, ...(parsedData.articles || [])],
+        totalResults: parsedData.totalResults || this.state.totalResults,
+        page: nextPage,
+      });
+    } catch (error) {
+      console.error("Fetching more news failed:", error);
+    }
   };
 
   render() {
     return (
       <div className="container my-3">
+        <h2 className="text-center">Top Headlines</h2>
+
+        {this.state.loading && <Spinner />}
+
         <InfiniteScroll
-          dataLength={this.state.articles.length}
+          dataLength={this.state.articles ? this.state.articles.length : 0}
           next={this.fetchMoreData}
-          hasMore={this.state.articles.length !==this.state.totalResults}
-          loader={<Spinner/>}
+          hasMore={this.state.articles.length < this.state.totalResults}
+          loader={<Spinner />}
         >
-        <div className="container">
-        <div className="row">
-          {this.state.articles && this.state.articles.map((elem)=>{
-            return <div className="col mb-4" key={elem.url}>
-              <NewsItems  title={elem.title?elem.title.slice(0,45):""} description={elem.description?elem.description.slice(0,88):""} imgUrl={elem.urlToImage} newsUrl={elem.url}/>
+          <div className="container">
+            <div className="row">
+              {this.state.articles &&
+                this.state.articles.map((elem) => (
+                  <div className="col mb-4" key={elem.url}>
+                    <NewsItems
+                      title={elem.title ? elem.title.slice(0, 45) : ""}
+                      description={
+                        elem.description ? elem.description.slice(0, 88) : ""
+                      }
+                      imgUrl={elem.urlToImage}
+                      newsUrl={elem.url}
+                    />
+                  </div>
+                ))}
             </div>
-          })}
-        </div>
-        </div>
+          </div>
         </InfiniteScroll>
       </div>
-      
     );
   }
 }
