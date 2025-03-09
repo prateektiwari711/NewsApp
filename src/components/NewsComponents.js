@@ -23,7 +23,7 @@ export default class NewsComponents extends Component {
       this.setState({ loading: true });
 
       let response = await fetch(
-        `https://newsapi.org/v2/top-headlines?country=in&category=${this.props.category}&apiKey=YOUR_API_KEY&page=${this.state.page}&pageSize=${this.props.pageSize}`,
+        `https://newsapi.org/v2/top-headlines?country=us&category=${this.props.category}&apiKey=467063ee50f34587951aaa351218e393&page=${this.state.page}&pageSize=${this.props.pageSize}`,
         {
           headers: {
             "User-Agent": "Mozilla/5.0",
@@ -54,7 +54,7 @@ export default class NewsComponents extends Component {
     try {
       let nextPage = this.state.page + 1;
       let response = await fetch(
-        `https://newsapi.org/v2/top-headlines?country=in&category=${this.props.category}&apiKey=YOUR_API_KEY&page=${nextPage}&pageSize=${this.props.pageSize}`,
+        `https://newsapi.org/v2/top-headlines?country=us&category=${this.props.category}&apiKey=467063ee50f34587951aaa351218e393&page=${nextPage}&pageSize=${this.props.pageSize}`,
         {
           headers: {
             "User-Agent": "Mozilla/5.0",

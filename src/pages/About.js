@@ -1,37 +1,21 @@
-import React, { Component } from 'react'
+import React from "react";
 
-export default class About extends Component {
-  handleNextClick=async()=>{
-    if(this.state.page+1>Math.ceil(this.state.totalResults/12)){
-    }
-    else{
-      let url=`https://newsapi.org/v2/top-headlines?country=in&apiKey=467063ee50f34587951aaa351218e393&page=${this.state.page+1}&pageSize=${this.props.pageSize}`;
-      let data=await fetch(url);
-      let parsedData= await data.json();
-      console.log(parsedData);
-      this.setState({page:this.state.page+1,
-        articles:parsedData.articles})
-    }
-  }
+const About = () => {
+  return (
+    <div className="max-w-3xl mx-auto p-6 text-center">
+      <h1 className="text-3xl font-bold mb-4">About NewsApp</h1>
+      <p className="text-lg text-gray-700">
+        Welcome to <strong>NewsApp</strong> – your go-to source for the latest
+        news from around the world. We provide real-time updates, in-depth
+        analysis, and reliable journalism to keep you informed about current
+        events, politics, technology, sports, and more.
+      </p>
+      <p className="mt-4 text-gray-600">
+        Our mission is to deliver accurate and unbiased news, empowering readers
+        with knowledge. Stay connected and explore the world with NewsApp!
+      </p>
+    </div>
+  );
+};
 
-  handlePrevClick = async () => {
-    let url=`https://newsapi.org/v2/top-headlines?country=in&apiKey=467063ee50f34587951aaa351218e393&page=${this.state.page-1}&pageSize=${this.props.pageSize}`;
-    let data = await fetch(url);
-    let parsedData = await data.json()
-    console.log(parsedData);
-    this.setState({
-        page: this.state.page - 1,
-        articles: parsedData.articles
-    })
-}
-  render() {
-    return (
-      <div>
-      <div className='container d-flex justify-content-between'>
-      <button disabled={this.state.page<=1} type="button" className="btn btn-success bg-dark" onClick={this.handlePrevClick()}>&laquo; Previous</button>
-      <button type="button" className="btn btn-success bg-dark" onClick={this.handleNextClick()}>Next &raquo;</button>
-      </div>
-      </div>
-    )
-  }
-}
+export default About;
